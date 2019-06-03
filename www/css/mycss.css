@@ -1,0 +1,49 @@
+.myHeaderContainer{
+	
+	position: relative;
+	width: 390px;
+	margin: -19px 65px 0 65px;
+	height: 53px;
+	
+}
+.myHeaderContainer #mylogo{
+	width: 40px;
+	height: 40px;
+	float: left;
+	margin-top: 3px;
+	
+}
+.myHeaderContainer h4{
+	top: 15px;
+	position: relative;
+}
+
+ul li .menuImg{
+	width: 60px;
+	height: 60px;
+	object-fit: cover;
+	border-radius: 40px;
+	float: left;
+	margin-left: 3px;
+	margin-top: 3px;
+
+}
+
+
+/* Landscape */
+@media (orientation: landscape) {
+
+
+.myHeaderContainer{
+	
+	margin: -19px 190px 0 190px;
+
+	
+}
+.myHeaderContainer h4{
+	
+	font-size: 17px;
+
+	
+}
+}

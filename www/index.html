@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Nearest Health Care</title>
+	<link rel="stylesheet" href="geolocate/leaflet.css"/>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css' rel='stylesheet' />
+	<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.css' type='text/css' />
+	<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.css' type='text/css' />
+	<link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" type="text/css" href="css/mycss.css">
+
+		<style type="text/css">
+			#titlemap{
+				text-align: center;
+				font-style: Monospace;
+				font-weight: bold;
+				font-size: 20px;
+					}
+		</style>
+	
+</head>
+	<body>
+		<div id="titlemap"><h1>Nearest Health Care Centre</h1></div>
+		<div id="map" style="width: inherit; height: 500px;"></div>
+		<div style="text-align: center; padding-top: 15px">
+		<!-------------------buttons-----------------------------> 
+		<button id="btndirect" onclick="display();" >Get Direction</button>
+		<button id="btninfect" onclick="infections();" >Show Dengue prone area</button>
+	</div>	
+
+<!-------------------End of body----------------------------->
+
+<script>
+//verify if location is defined, if not alert else locate user	
+if(navigator.geolocation==undefined){alert("GeoLocation undefined");
+
+		}else{
+			
+				navigator.geolocation.getCurrentPosition(userLocated,locationError);
+
+//get user location in lat and long 
+function userLocated(position){
+var latitude = position.coords.latitude;
+var longitude = position.coords.longitude;
+				
+				//token for mapbox API
+				mapboxgl.accessToken = 'pk.eyJ1IjoidmFzaGlsMTIiLCJhIjoiY2p2Z28wMGxiMDRyMzN5cXRseHZqc3F5OSJ9.JIbKYu71J0xBnW0OLaCYFw';
+
+				//initialise map
+ 				mymap = new mapboxgl.Map({
+				container: 'map',
+				style: 'mapbox://styles/mapbox/streets-v11',
+				center: [longitude, latitude],
+				zoom: 13
+
+										});
+ 				//set marker on user location
+				var marker = new mapboxgl.Marker()
+  				.setLngLat([longitude, latitude])
+  				.addTo(mymap);
+
+			//geojson for hospitals and healthcare centre stored in var  hospital
+			var hospitals = {
+			  "type": "FeatureCollection",
+			  "generator": "overpass-ide",
+			  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+			  "timestamp": "2019-05-10T07:45:02Z",
+			  "features": [
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "relation/8125062",
+			        "amenity": "hospital",
+			        "name": "Long Mountain Hospital",
+			        
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			         57.57147,
+			         -20.15149
+			        ]			
+			      },
+			      "id": "relation/8125062"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "way/223556390",
+			        "amenity": "hospital",
+			        "emergency": "yes",
+			        "name": "Souillac Hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			         57.52393,
+			         -20.52155
+			        ]			
+			      },
+			      "id": "way/223556390"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "way/224268361",
+			        "amenity": "hospital",
+			        "name": "Jawaharnal Nehru Hospital"
+			        
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			         57.59308,
+			         -20.40511
+			        ]			
+			      },
+			      "id": "way/224268361"
+			    },
+			    		    
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/372014045",
+			        "name": "Dr Abdool Gaffoor Jeetoo Hospital",
+			        "addr:street": "Volcy Pougnet Street Port-Louis",
+			        "amenity": "hospital",
+			        "source": "Tel :2128958"
+			      },
+			      "geometry": {
+			         "type": "Point",
+			        "coordinates": [
+			         57.50224,
+			         -20.16904
+			        ]			           
+			      },
+			      "id": "node/372014045"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "way/413639896",
+			        "name": "Poudre d'Or Hospital",
+			        "addr:city": "Poudre D'Or",
+			        "amenity": "hospital"
+			        
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			         57.68510,
+			         -20.05911
+			        ]		
+			      },
+			      "id": "way/413639896"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/3400021565",
+			        "name": "Pointe aux sables Medical Dispensary",
+			        "addr:city": "Pointe aux Sables",
+			        "amenity": "hospital"
+			        
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			         57.44630,
+			         -20.17276
+			        ]		
+			      },
+			      "id": "node/3400021565"
+			    },
+			   
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "way/445169724",
+			        "addr:city": "Montage Blanche",
+			        "addr:street": "B54-Petit Paquet Road",
+			        "amenity": "hospital",
+			        "name": "Health Center Montagne Blanche",
+			        "phone": "437 5153"
+			      },
+			      "geometry": {
+			       "type": "Point",
+			        "coordinates": [
+			        57.66172,
+			        -20.28374
+			        ]		
+			     },
+			      "id": "way/445169724"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "way/472059494",
+			        "amenity": "hospital",
+			        "name": "Dr. Agalwal's Eye hospital"
+			      },
+			      "geometry": {
+			        "type": "Polygon",
+			        "coordinates": [
+			          [
+			            [
+			              57.4917886,
+			              -20.2488298
+			            ],
+			            [
+			              57.4916062,
+			              -20.2490361
+			            ],
+			            [
+			              57.4920783,
+			              -20.2494186
+			            ],
+			            [
+			              57.4922553,
+			              -20.249167
+			            ],
+			            [
+			              57.4917886,
+			              -20.2488298
+			            ]
+			          ]
+			        ]
+			      },
+			      "id": "way/472059494"
+			    },
+			    
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "way/647952709",
+			        "amenity": "hospital",
+			        "designation": "Public Hospital",
+			        "emergency": "yes",
+			        "name": "Sir Seewoosagur Ramgoolam National Hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			         57.55944,
+			         -20.09662
+			        ]		
+			      },
+			      "id": "way/647952709"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "way/677855079",
+			        "amenity": "hospital",
+			        "building:levels": "1",
+			        "healthcare": "hospital",
+			        "healthcare:speciality": "general",
+			        "name": "Belle Mare Community Health Centre",
+			        "opening_hours": "Mon- Fri 8hr-16hr Sat 8hr-12hr",
+			        "parking": "surface"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			         57.77509,
+			         -20.19729
+			        ]		
+			      },
+			      "id": "way/677855079"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/889891655",
+			        "amenity": "hospital",
+			        "name": "Victoria Hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.48454,
+			          -20.28107
+			        ]
+			      },
+			      "id": "node/889891655"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/1823071980",
+			        "amenity": "hospital",
+			        "name": "Dr. Yves Catin Community Hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.3722498,
+			          -20.3616035
+			        ]
+			      },
+			      "id": "node/1823071980"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/1891142592",
+			        "amenity": "hospital",
+			        "name": "Moka eye hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.50372,
+			          -20.2220664
+			        ]
+			      },
+			      "id": "node/1891142592"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/2153376271",
+			        "amenity": "hospital",
+			        "emergency": "yes",
+			        "name": "Clinique du Nord"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.5598529,
+			          -20.0085091
+			        ]
+			      },
+			      "id": "node/2153376271"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/2162697266",
+			        "amenity": "hospital",
+			        "emergency": "yes",
+			        "name": "Clinique du Nord"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.4969314,
+			          -20.1306045
+			        ]
+			      },
+			      "id": "node/2162697266"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/2278541192",
+			        "amenity": "hospital",
+			        "emergency": "yes",
+			        "name": "Medisave Clinic"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.4767085,
+			          -20.2685106
+			        ]
+			      },
+			      "id": "node/2278541192"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/2656293192",
+			        "amenity": "hospital",
+			        "name": "L'Escalier Medi Clinic"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.6175984,
+			          -20.4747703
+			        ]
+			      },
+			      "id": "node/2656293192"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/2998127795",
+			        "addr:city": "Centre de Flacq",
+			        "amenity": "hospital",
+			        "emergency": "yes",
+			        "name": "Flacq Hospital (Casualty)"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.718423,
+			          -20.1930807
+			        ]
+			      },
+			      "id": "node/2998127795"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/2998127796",
+			        "addr:city": "Centre de Flacq",
+			        "amenity": "hospital",
+			        "name": "Flacq Hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.718932,
+			          -20.1918952
+			        ]
+			      },
+			      "id": "node/2998127796"
+			    },
+			  
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/3754148453",
+			        "amenity": "hospital",
+			        "name": "The Vale Area Health Centre"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.5976273,
+			          -20.0288247
+			        ]
+			      },
+			      "id": "node/3754148453"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/3754488545",
+			        "addr:city": "Triolet",
+			        "amenity": "hospital",
+			        "name": "Triolet Medi Clinic"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.5554514,
+			          -20.0603374
+			        ]
+			      },
+			      "id": "node/3754488545"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/4325023393",
+			        "amenity": "hospital",
+			        "name": "ENT hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.4964137,
+			          -20.2937562
+			        ]
+			      },
+			      "id": "node/4325023393"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/4353463758",
+			        "amenity": "hospital",
+			        "name": "Health Centre"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.5682066,
+			          -20.0692988
+			        ]
+			      },
+			      "id": "node/4353463758"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/4612335549",
+			        "amenity": "hospital",
+			        "name": "Mahebourg Hospital"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.7031815,
+			          -20.4112976
+			        ]
+			      },
+			      "id": "node/4612335549"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/4621711885",
+			        "amenity": "hospital",
+			        "name": "Primary Health Care"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.6844591,
+			          -20.1483065
+			        ]
+			      },
+			      "id": "node/4621711885"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/4622176493",
+			        "amenity": "hospital",
+			        "name": "medi clinic"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.6619076,
+			          -20.1781367
+			        ]
+			      },
+			      "id": "node/4622176493"
+			    },
+			    {
+			      "type": "Feature",
+			      "properties": {
+			        "@id": "node/4625704622",
+			        "amenity": "hospital",
+			        "name": "Chemin Grenier Dispensary"
+			      },
+			      "geometry": {
+			        "type": "Point",
+			        "coordinates": [
+			          57.4709686,
+			          -20.4925313
+			        ]
+			      },
+			      "id": "node/4625704622"
+			    }
+			  ]
+			}
+
+//geojson for infected areas
+ areas = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.54544258117675,
+              -20.0331931517861
+            ],
+            [
+              57.54123687744141,
+              -20.041055105901734
+            ],
+            [
+              57.54449844360351,
+              -20.043514405624283
+            ],
+            [
+              57.555227279663086,
+              -20.04569145848909
+            ],
+            [
+              57.55496978759765,
+              -20.039644014904567
+            ],
+            [
+              57.54544258117675,
+              -20.0331931517861
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.54733085632324,
+              -20.06560605926759
+            ],
+            [
+              57.54733085632324,
+              -20.06560605926759
+            ],
+            [
+              57.54733085632324,
+              -20.06560605926759
+            ],
+            [
+              57.54733085632324,
+              -20.06560605926759
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.522525787353516,
+              -20.173983355627314
+            ],
+            [
+              57.52190351486206,
+              -20.163912411561274
+            ],
+            [
+              57.51939296722412,
+              -20.160649286237316
+            ],
+            [
+              57.5126338005066,
+              -20.1684645588059
+            ],
+            [
+              57.51960754394531,
+              -20.173822225641057
+            ],
+            [
+              57.522525787353516,
+              -20.173983355627314
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.53454208374023,
+              -20.522658607113815
+            ],
+            [
+              57.53321170806885,
+              -20.520488241940335
+            ],
+            [
+              57.530765533447266,
+              -20.521251892454796
+            ],
+            [
+              57.52930641174316,
+              -20.51819726753978
+            ],
+            [
+              57.53385543823242,
+              -20.513575021849796
+            ],
+            [
+              57.52085208892823,
+              -20.511605500860096
+            ],
+            [
+              57.516775131225586,
+              -20.512449584385816
+            ],
+            [
+              57.52183914184571,
+              -20.52109112424203
+            ],
+            [
+              57.5284481048584,
+              -20.525793524699235
+            ],
+            [
+              57.53454208374023,
+              -20.522658607113815
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.67281532287598,
+              -20.1790790055483
+            ],
+            [
+              57.66620635986329,
+              -20.180126312172643
+            ],
+            [
+              57.66242980957031,
+              -20.179965188534545
+            ],
+            [
+              57.66045570373535,
+              -20.182382025619898
+            ],
+            [
+              57.66148567199706,
+              -20.186651679555613
+            ],
+            [
+              57.66285896301269,
+              -20.192693442777248
+            ],
+            [
+              57.664575576782234,
+              -20.196962814166593
+            ],
+            [
+              57.66826629638672,
+              -20.20082931368349
+            ],
+            [
+              57.666893005371094,
+              -20.203648575725968
+            ],
+            [
+              57.66938209533691,
+              -20.208481477599435
+            ],
+            [
+              57.67427444458008,
+              -20.20727326619727
+            ],
+            [
+              57.67573356628419,
+              -20.20324582713095
+            ],
+            [
+              57.67813682556152,
+              -20.196560048279853
+            ],
+            [
+              57.68019676208496,
+              -20.193579548348755
+            ],
+            [
+              57.676591873168945,
+              -20.183348749961855
+            ],
+            [
+              57.67281532287598,
+              -20.1790790055483
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.54668712615967,
+              -20.06677505648377
+            ],
+            [
+              57.54505634307861,
+              -20.072055590506128
+            ],
+            [
+              57.54364013671875,
+              -20.074312863774594
+            ],
+            [
+              57.54574298858642,
+              -20.077295639319264
+            ],
+            [
+              57.54840373992919,
+              -20.077940556299442
+            ],
+            [
+              57.550506591796875,
+              -20.075602719623028
+            ],
+            [
+              57.5518798828125,
+              -20.070967250712442
+            ],
+            [
+              57.55140781402587,
+              -20.069153334270986
+            ],
+            [
+              57.550077438354485,
+              -20.067621566270528
+            ],
+            [
+              57.54668712615967,
+              -20.06677505648377
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.58784294128417,
+              -20.107442669570812
+            ],
+            [
+              57.58389472961425,
+              -20.108893449777383
+            ],
+            [
+              57.58071899414063,
+              -20.107765066334515
+            ],
+            [
+              57.57453918457031,
+              -20.109457638447804
+            ],
+            [
+              57.57170677185058,
+              -20.10994122711778
+            ],
+            [
+              57.5709342956543,
+              -20.10760386803567
+            ],
+            [
+              57.56621360778808,
+              -20.107442669570812
+            ],
+            [
+              57.56647109985351,
+              -20.111150192254442
+            ],
+            [
+              57.56123542785644,
+              -20.111794969841363
+            ],
+            [
+              57.558317184448235,
+              -20.11493822252717
+            ],
+            [
+              57.56604194641113,
+              -20.11469643610107
+            ],
+            [
+              57.573251724243164,
+              -20.114374053618302
+            ],
+            [
+              57.581491470336914,
+              -20.114857627093315
+            ],
+            [
+              57.58767127990723,
+              -20.115663579563343
+            ],
+            [
+              57.59058952331543,
+              -20.110908399974367
+            ],
+            [
+              57.58784294128417,
+              -20.107442669570812
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.522268295288086,
+              -20.152249446091933
+            ],
+            [
+              57.52441406249999,
+              -20.15394153657739
+            ],
+            [
+              57.52741813659667,
+              -20.15772852977608
+            ],
+            [
+              57.526559829711914,
+              -20.159259415841408
+            ],
+            [
+              57.52861976623535,
+              -20.161434859681272
+            ],
+            [
+              57.530765533447266,
+              -20.16441597420612
+            ],
+            [
+              57.53145217895508,
+              -20.16715532652451
+            ],
+            [
+              57.53059387207031,
+              -20.16965292936303
+            ],
+            [
+              57.53291130065917,
+              -20.171908794327404
+            ],
+            [
+              57.53651618957519,
+              -20.175131401960257
+            ],
+            [
+              57.53668785095215,
+              -20.17851506829793
+            ],
+            [
+              57.536602020263665,
+              -20.181979222041193
+            ],
+            [
+              57.53617286682129,
+              -20.185926652226517
+            ],
+            [
+              57.53728866577149,
+              -20.188423954381538
+            ],
+            [
+              57.53994941711426,
+              -20.18971286886712
+            ],
+            [
+              57.543296813964844,
+              -20.18971286886712
+            ],
+            [
+              57.544841766357415,
+              -20.186812796281767
+            ],
+            [
+              57.54690170288086,
+              -20.185926652226517
+            ],
+            [
+              57.55042076110839,
+              -20.185443298799868
+            ],
+            [
+              57.55256652832031,
+              -20.18294594888136
+            ],
+            [
+              57.54887580871582,
+              -20.180690243594572
+            ],
+            [
+              57.54535675048828,
+              -20.180045750374415
+            ],
+            [
+              57.54338264465332,
+              -20.17762887706887
+            ],
+            [
+              57.545185089111335,
+              -20.176098171263792
+            ],
+            [
+              57.54389762878418,
+              -20.173600671638116
+            ],
+            [
+              57.5394344329834,
+              -20.169572362153723
+            ],
+            [
+              57.53617286682129,
+              -20.1632879916246
+            ],
+            [
+              57.53265380859374,
+              -20.161434859681272
+            ],
+            [
+              57.536602020263665,
+              -20.161757145078376
+            ],
+            [
+              57.53840446472168,
+              -20.16038742754387
+            ],
+            [
+              57.539863586425774,
+              -20.15893712528606
+            ],
+            [
+              57.54012107849121,
+              -20.156036480339562
+            ],
+            [
+              57.53746032714844,
+              -20.153216357186444
+            ],
+            [
+              57.53643035888672,
+              -20.151765988299086
+            ],
+            [
+              57.53437042236328,
+              -20.148784632164155
+            ],
+            [
+              57.53325462341308,
+              -20.14717306460696
+            ],
+            [
+              57.53128051757812,
+              -20.145400321085873
+            ],
+            [
+              57.52887725830078,
+              -20.1445139417797
+            ],
+            [
+              57.52664566040039,
+              -20.145722639586378
+            ],
+            [
+              57.52492904663086,
+              -20.147575958055405
+            ],
+            [
+              57.52192497253418,
+              -20.15047676019943
+            ],
+            [
+              57.522268295288086,
+              -20.152249446091933
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.493343353271484,
+              -20.185523857808434
+            ],
+            [
+              57.49154090881347,
+              -20.185080782746113
+            ],
+            [
+              57.48570442199707,
+              -20.184879384574092
+            ],
+            [
+              57.48334407806396,
+              -20.18588637283156
+            ],
+            [
+              57.48128414154052,
+              -20.18987398242815
+            ],
+            [
+              57.48325824737548,
+              -20.19221011034114
+            ],
+            [
+              57.484931945800774,
+              -20.19313649619303
+            ],
+            [
+              57.487893104553216,
+              -20.193700380536157
+            ],
+            [
+              57.48939514160156,
+              -20.192169832570446
+            ],
+            [
+              57.491111755371094,
+              -20.19438509449447
+            ],
+            [
+              57.49321460723876,
+              -20.195835067059104
+            ],
+            [
+              57.49450206756591,
+              -20.194143431088143
+            ],
+            [
+              57.495574951171875,
+              -20.192975386005806
+            ],
+            [
+              57.49669075012207,
+              -20.191767054290764
+            ],
+            [
+              57.49737739562988,
+              -20.190558713203913
+            ],
+            [
+              57.496604919433594,
+              -20.188303118101896
+            ],
+            [
+              57.49669075012207,
+              -20.186812796281767
+            ],
+            [
+              57.493343353271484,
+              -20.185523857808434
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57.50814914703369,
+              -20.134823876345084
+            ],
+            [
+              57.50851392745972,
+              -20.13381655855402
+            ],
+            [
+              57.5080418586731,
+              -20.132507035719062
+            ],
+            [
+              57.50632524490356,
+              -20.13135867589574
+            ],
+            [
+              57.50789165496826,
+              -20.13012972007218
+            ],
+            [
+              57.50767707824706,
+              -20.128618695570644
+            ],
+            [
+              57.50598192214965,
+              -20.127691926650165
+            ],
+            [
+              57.504394054412835,
+              -20.127631485007992
+            ],
+            [
+              57.5028920173645,
+              -20.127006920003875
+            ],
+            [
+              57.49892234802246,
+              -20.127933692985184
+            ],
+            [
+              57.497549057006836,
+              -20.12896119573778
+            ],
+            [
+              57.49692678451538,
+              -20.130109573174902
+            ],
+            [
+              57.49752759933472,
+              -20.131842196849707
+            ],
+            [
+              57.4985146522522,
+              -20.13389714421623
+            ],
+            [
+              57.498321533203125,
+              -20.135670018271814
+            ],
+            [
+              57.500295639038086,
+              -20.13699966061417
+            ],
+            [
+              57.5028920173645,
+              -20.137664477542494
+            ],
+            [
+              57.50321388244629,
+              -20.1364758634663
+            ],
+            [
+              57.50533819198608,
+              -20.13693922257134
+            ],
+            [
+              57.50731229782104,
+              -20.136798200380472
+            ],
+            [
+              57.50814914703369,
+              -20.134823876345084
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
+
+			//adding the cross sign by layer to the map
+			mymap.on('load', function(e) {
+			  		// Add the data to your map as a layer
+			  		mymap.addLayer({
+			   		id: 'locations',
+			    	type: 'symbol',
+			    // Add a GeoJSON source containing place coordinates and information.
+			   		 source: {
+			      	 type: 'geojson',
+			      	 data: hospitals
+			    	},
+			    	 layout: {
+			      	'icon-image': 'hospital-15',
+			      	'icon-allow-overlap': true,
+			    }
+			  });
+			});
+
+			//codes for the focus popup
+
+			mymap.on('click', 'locations', function (e) {
+			   		 var hlth = e.features[0].properties,
+			       	 popOverContet;
+
+			    	 for (prop in hlth) {
+			         popOverContet += hlth[prop] + '</br>';
+			   		 }
+
+			    	 new mapboxgl.Popup()
+			        .setLngLat(e.features[0].geometry.coordinates)
+			        .setHTML(popOverContet)
+			        .addTo(mymap);
+			});
+
+
+
+			//code for search box
+					var geocoder = new MapboxGeocoder({ // Initialize the geocoder
+			  		accessToken: mapboxgl.accessToken, // Set the access token
+			  		mapboxgl: mapboxgl, // Set the mapbox-gl instance
+			  		marker: false, // Do not use the default marker style
+			  		proximity: {
+			        longitude: longitude,
+			      	latitude: latitude
+			    				}
+					});
+
+					// Add the geocoder to the map
+					mymap.addControl(geocoder);
+		
+	
+			}
+
+			function locationError(error){
+				switch(error.code){
+					case error.PERMISSION_DENIED: alert("Permission Denied-"+ error.message);
+					break;
+
+					case error.POSSITION_UNAVAILABLE: alert("position Not Available-"+ error.message);
+					break;
+
+					case error.TIMEOUT: alert("Request Time Out-"+ error.message);
+					break;
+				}
+			}	
+
+			
+			function display(){
+				 navigate = mymap.addControl(new MapboxDirections({
+				 accessToken: mapboxgl.accessToken}), 'top-left');
+
+								}
+			function infections(){
+				 mymap.addLayer({
+  					id: 'danger',
+ 					type: 'heatmap',
+ 					source: {
+      				type: 'geojson',
+     				data: areas
+    						},
+  					maxzoom: 14,
+  					paint: {
+   		 // increase weight as diameter breast height increases
+    				'heatmap-weight': {
+      				 property: 'dbh',
+     				 type: 'exponential',
+      				 stops: [
+        				[1, 0],
+        				[14, 1]
+      						]
+    						},
+    	// increase intensity as zoom level increases
+    				'heatmap-intensity': {
+      				 stops: [
+       					[11, 0.5],
+        				[15, 1]
+     						]
+    						},
+    	// assign color values be applied to points depending on their density
+    				'heatmap-color': [
+      				'interpolate',
+      				 ['linear'],
+      				 ['heatmap-density'],
+      					0, 'rgba(236,222,239,0)',
+      					0.2, 'rgb(208,209,230)',
+      					0.4, 'rgb(166,189,219)',
+      					0.6, 'rgb(207,103,117)',
+      					0.8, 'rgb(153,37,28)'
+    					],
+    	// increase radius as zoom increases
+    				'heatmap-radius': {
+      				stops: [
+       					 [13, 30],
+       					 [16,40 ]
+     					   ]
+   						   },
+    	// decrease opacity to transition into the circle layer
+    				'heatmap-opacity': {
+     				 default: 1,
+      				 stops: [
+       					 [14, 1],
+        				 [22, 0]
+      						]
+   						    },
+ 			 }
+			}, 'waterway-label');
+		}
+	}
+	</script>
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js'></script>
+	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.min.js'></script>
+	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.js'></script>
+	<script src="geolocate/leaflet.js"></script>	
+	<script src="js/jquery.min.js"></script>
+      <script src="js/jquery.mobile-1.4.5.js"></script>     
+        <script src="js/myjs.js"></script>
+</body>
+</html>
